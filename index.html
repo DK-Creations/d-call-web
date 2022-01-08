@@ -7,9 +7,29 @@
 
         <script src="./peerjs.js"></script>
 
-        <video class="secondary-video" autoplay id="remote-video"></video>
-        <video class="primary-video" autoplay muted id="local-video"></video>
+        <div id="videos">
+            <video class="secondary-video" autoplay id="remote-video"></video>
+            <video class="primary-video" autoplay muted id="local-video"></video>
+        </div>
 
+        <div id="controls">
+            <div id="top">
+                <div class="icon_bg" id="cam_switch" style="float: right;">
+                    <img class="icon" src="./icons/ic_switch_camera_black.png">
+                </div>
+            </div>
+            <div id="bottom">
+                <div class="icon_bg" id="togg_mic">
+                    <img class="icon" id="ic_togg_mic" src="./icons/ic_mic_black.png">
+                </div>
+                <div class="icon_bg" id="end">
+                    <img class="icon" src="./icons/ic_call_end_black.png">
+                </div>
+                <div class="icon_bg" id="togg_cam">
+                    <img class="icon" id="ic_togg_cam" src="./icons/ic_videocam_black.png">
+                </div>
+        </div>
+            
         <script src="./call.js"></script>
 
     </body>
