@@ -1,5 +1,14 @@
 let localVideo = document.getElementById("local-video")
 let remoteVideo = document.getElementById("remote-video")
+let s_cam = document.getElementById("cam_switch")
+let togg_mic = document.getElementById("togg_mic")
+let ic_mic = document.getElementById("ic_togg_mic")
+let togg_cam = document.getElementById("togg_cam")
+let ic_cam = document.getElementById("ic_togg_cam")
+let end = document.getElementById("end")
+
+var Col_grey = 'rgb(48, 49, 53)';
+var Col_red = 'rgb(234, 66, 53)';
 
 localVideo.style.opacity = 0
 remoteVideo.style.opacity = 0
@@ -29,7 +38,6 @@ navigator.mediaDevices.enumerateDevices().then((device)=>{
         init(ID+' web');
     }
 
-
 });
 
 let peer
@@ -40,7 +48,8 @@ function init(userId) {
     MYID = userId;
     peer = new Peer(userId, {
         host: 'd-call.herokuapp.com',
-        port: 443
+        port: 443,
+        secure: true
     })
 
     peer.on('open',(c)=>{
@@ -73,7 +82,7 @@ function listen() {
 
             call.answer(stream)
             call.on('stream', (remoteStream) => {
-                remoteVideo.srcObject = null
+
                 remoteVideo.srcObject = remoteStream
 
                 remoteVideo.className = "primary-video"
@@ -101,7 +110,7 @@ function startCall(otherUserId) {
 
         const call = peer.call(otherUserId, stream)
         call.on('stream', (remoteStream) => {
-            remoteVideo.srcObject = null
+            
             remoteVideo.srcObject = remoteStream
 
             remoteVideo.className = "primary-video"
@@ -111,19 +120,27 @@ function startCall(otherUserId) {
     })
 }
 
-function toggleVideo(b) {
-    if (b == "true") {
-        localStream.getVideoTracks()[0].enabled = true
-    } else {
+function toggleVideo() {
+    if (localStream.getVideoTracks()[0].enabled == true) {
         localStream.getVideoTracks()[0].enabled = false
+        ic_cam.src = "./icons/ic_videocam_off_black.png"
+        togg_cam.style.backgroundColor = Col_red;
+    } else {
+        localStream.getVideoTracks()[0].enabled = true
+        ic_cam.src = "./icons/ic_videocam_black.png"
+        togg_cam.style.backgroundColor = Col_grey;
     }
 } 
 
-function toggleAudio(b) {
-    if (b == "true") {
-        localStream.getAudioTracks()[0].enabled = true
-    } else {
+function toggleAudio() {
+    if (localStream.getAudioTracks()[0].enabled == true) {
         localStream.getAudioTracks()[0].enabled = false
+        ic_mic.src = "./icons/ic_mic_off_black.png"
+        togg_mic.style.backgroundColor = Col_red;
+    } else {
+        localStream.getAudioTracks()[0].enabled = true
+        ic_mic.src = "./icons/ic_mic_black.png"
+        togg_mic.style.backgroundColor = Col_grey;
     }
 }
 
@@ -138,3 +155,15 @@ function switchCam() {
     })
     peer.destroy();
 }
+
+s_cam.addEventListener('click',()=>{
+    switchCam()
+})
+
+togg_mic.addEventListener('click',()=>{
+    toggleAudio()
+})
+
+togg_cam.addEventListener('click',()=>{
+    toggleVideo()
+})
