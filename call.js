@@ -40,8 +40,7 @@ function init(userId) {
     MYID = userId;
     peer = new Peer(userId, {
         host: 'd-call.herokuapp.com',
-        port: 443,
-        secure: true
+        port: 443
     })
 
     peer.on('open',(c)=>{
