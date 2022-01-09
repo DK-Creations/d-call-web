@@ -53,6 +53,10 @@ function init(userId) {
         secure: true
     })
 
+    peer.on('open',()=>{
+        startCall(ID2)
+    })
+
     listen()
 }
 
