@@ -16,8 +16,8 @@ remoteVideo.style.opacity = 0
 localVideo.onplaying = () => { localVideo.style.opacity = 1 }
 remoteVideo.onplaying = () => { remoteVideo.style.opacity = 1 }
 var urlParams = new URL(location.href).searchParams;
-var ID = urlParams.get("call");
-var MYID;
+var ID2 = urlParams.get("call");
+var ID1;
 var cam = 0;
 var VideoTracks=[];
 var AudioTracks=[];
@@ -34,40 +34,34 @@ navigator.mediaDevices.enumerateDevices().then((device)=>{
         }
     }
 
-    if(ID) {
-        init(ID+' web');
+    if(ID2) {
+        init(ID2+' web');
     }
 
 });
 
 let peer
-
-
+let call
 
 function init(userId) {
-    MYID = userId;
+
+    ID1 = userId;
+    
     peer = new Peer(userId, {
         host: 'd-call.herokuapp.com',
         port: 443,
         secure: true
     })
 
-    peer.on('open',(c)=>{
-        if(ID) {
-            startCall(ID)
-        }
-    })
-
-    peer.on('close',()=>{
-        init(MYID);
-    })
-
     listen()
 }
 
 let localStream
+
 function listen() {
-    peer.on('call', (call) => {
+    peer.on('call', (remotecall) => {
+
+        call = remotecall;
 
         navigator.getUserMedia({
             audio: true, 
@@ -75,20 +69,13 @@ function listen() {
                 deviceId: VideoTracks[cam].deviceId
             }
         }, (stream) => {
-            localVideo.srcObject = null
             localStream = null
-            localVideo.srcObject = stream
             localStream = stream
+            localVideo.srcObject = localStream
 
-            call.answer(stream)
-            call.on('stream', (remoteStream) => {
+            call.answer(localStream)
 
-                remoteVideo.srcObject = remoteStream
-
-                remoteVideo.className = "primary-video"
-                localVideo.className = "secondary-video"
-
-            })
+            listenStream()
 
         })
         
@@ -97,26 +84,32 @@ function listen() {
 
 function startCall(otherUserId) {
     
+    ID2 = otherUserId
+
     navigator.getUserMedia({
         audio: true,
         video: {
                 deviceId: VideoTracks[cam].deviceId
             }
         }, (stream) => {
-            localVideo.srcObject = null
             localStream = null
-            localVideo.srcObject = stream
             localStream = stream
+            localVideo.srcObject = localStream
 
-        const call = peer.call(otherUserId, stream)
-        call.on('stream', (remoteStream) => {
+        call = peer.call(otherUserId, localStream)
+
+        listenStream()
+
+    })
+}
+
+function listenStream() {
+    call.on('stream', (remoteStream) => {
             
-            remoteVideo.srcObject = remoteStream
-
-            remoteVideo.className = "primary-video"
-            localVideo.className = "secondary-video"
-        })
-
+        remoteVideo.srcObject = remoteStream
+    
+        remoteVideo.className = "primary-video"
+        localVideo.className = "secondary-video"
     })
 }
 
@@ -153,7 +146,8 @@ function switchCam() {
     localStream.getTracks().forEach((track)=>{
         track.stop()
     })
-    peer.destroy();
+    
+    startCall(ID2)
 }
 
 s_cam.addEventListener('click',()=>{
