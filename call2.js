@@ -16,8 +16,8 @@ remoteVideo.style.opacity = 0
 localVideo.onplaying = () => { localVideo.style.opacity = 1 }
 remoteVideo.onplaying = () => { remoteVideo.style.opacity = 1 }
 var urlParams = new URL(location.href).searchParams;
-var ID = urlParams.get("call");
-var MYID;
+var ID2 = urlParams.get("call");
+var ID1;
 var cam = 0;
 var VideoTracks=[];
 var AudioTracks=[];
@@ -34,8 +34,8 @@ navigator.mediaDevices.enumerateDevices().then((device)=>{
         }
     }
 
-    if(ID) {
-        init(ID+' web');
+    if(ID2) {
+        init(ID2+' web');
     }
 
 });
@@ -43,17 +43,15 @@ navigator.mediaDevices.enumerateDevices().then((device)=>{
 let peer
 let call
 
-
-
 function init(userId) {
-    MYID = userId;
+
+    ID1 = userId;
+    
     peer = new Peer(userId, {
         host: 'd-call.herokuapp.com',
         port: 443,
         secure: true
     })
-
-    
 
     listen()
 }
@@ -77,6 +75,8 @@ function listen() {
 
             call.answer(localStream)
 
+            listenStream()
+
         })
         
     })
@@ -84,6 +84,8 @@ function listen() {
 
 function startCall(otherUserId) {
     
+    ID2 = otherUserId
+
     navigator.getUserMedia({
         audio: true,
         video: {
@@ -95,6 +97,8 @@ function startCall(otherUserId) {
             localVideo.srcObject = localStream
 
         call = peer.call(otherUserId, localStream)
+
+        listenStream()
 
     })
 }
@@ -142,7 +146,8 @@ function switchCam() {
     localStream.getTracks().forEach((track)=>{
         track.stop()
     })
-    peer.destroy();
+    
+    startCall(ID2)
 }
 
 s_cam.addEventListener('click',()=>{
