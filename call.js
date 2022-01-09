@@ -148,6 +148,8 @@ function switchCam() {
         track.stop()
     })
     
+    peer._connections.values().next().value[0].close()
+    
     startCall(ID2)
 }
 
